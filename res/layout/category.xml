@@ -15,14 +15,16 @@
             android:layout_height="match_parent"
             android:id="@+id/categories"
             android:columnWidth="200dp"
-            android:background="#FFFFFF" />
+            android:background="#FFFFFF"
+            android:listSelector="#FFFFFF" />
 
         <GridView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/products"
             android:columnWidth="200dp"
-            android:background="#FFFFFF" />
+            android:background="#FFFFFF"
+            android:listSelector="#FFFFFF" />
 
     </LinearLayout>
 </ScrollView>

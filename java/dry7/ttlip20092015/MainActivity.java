@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity
 
     public void setTitle(String title)
     {
+        Log.d("myLogs", "title = " + title);
         this.mTitle = title;
     }
 

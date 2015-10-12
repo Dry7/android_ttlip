@@ -1,5 +1,6 @@
 package dry7.ttlip20092015;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -53,6 +54,7 @@ public class CategoryFragment extends Fragment {
         if (bundle != null) {
             new HttpRequestTask().execute(bundle.getInt("category"), 0);
         } else {
+            ((MainActivity)getActivity()).setTitle("Главная");
             new HttpRequestTask().execute(0);
         }
 
@@ -70,11 +72,14 @@ public class CategoryFragment extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putInt("category", Integer.valueOf(adapter.getCategory(position).getId()));
                 getActivity().setTitle(adapter.getCategory(position).getName());
+                Activity activity = (MainActivity)getActivity();
+                activity.setTitle("Сука((");
+                Log.d("myLogs", getActivity().toString());
                 fragment.setArguments(bundle);
                 getFragmentManager().beginTransaction()
-                    .replace(R.id.container, fragment)
+                        .replace(R.id.container, fragment)
                         .addToBackStack(adapter.getCategory(position).getName())
-                            .commit();
+                        .commit();
             }
         });
 
@@ -98,7 +103,7 @@ public class CategoryFragment extends Fragment {
                 getActivity().setTitle(adapter.getProduct(position).getName());
                 fragment.setArguments(bundle);
                 getFragmentManager().beginTransaction()
-                    .replace(R.id.container, fragment)
+                        .replace(R.id.container, fragment)
                         .addToBackStack(adapter.getProduct(position).getName())
                         .commit();
             }
@@ -130,22 +135,22 @@ public class CategoryFragment extends Fragment {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String resultJson = "";
+        Integer category;
 
         @Override
         protected String doInBackground(Integer... params) {
             try {
-                Integer category;
                 try {
-                    category = params[0];
+                    this.category = params[0];
                 } catch (Exception e) {
-                    category = 0;
+                    this.category = 0;
                     e.printStackTrace();
                 }
 
                 URL url;
-                if (category > 0) {
-                    url = new URL(String.format("http://ios.gifts48.ru/categories/%s", category));
-                    Log.d("myLogs", String.format("http://ios.gifts48.ru/categories/%s", category));
+                if (this.category > 0) {
+                    url = new URL(String.format("http://ios.gifts48.ru/categories/%s", this.category));
+                    Log.d("myLogs", String.format("http://ios.gifts48.ru/categories/%s", this.category));
                 } else {
                     url = new URL("http://ios.gifts48.ru/categories");
                     Log.d("myLogs", "http://ios.gifts48.ru/categories");

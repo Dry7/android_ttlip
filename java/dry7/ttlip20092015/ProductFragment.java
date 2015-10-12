@@ -1,5 +1,6 @@
 package dry7.ttlip20092015;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -55,6 +56,12 @@ public class ProductFragment extends Fragment {
         productNameView.setText(product.getName());
         productPriceView.setText(product.getPrice() + " р.");
         productDescriptionView.loadData(product.getDescription(), "text/html; charset=UTF-8", null);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((MainActivity) activity).setTitle("Товар");
     }
 
     class HttpRequestTask extends AsyncTask<Integer, Void, String>

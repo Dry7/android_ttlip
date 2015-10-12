@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,7 +52,16 @@ public class MainActivity extends AppCompatActivity
                 fragment = new CategoryFragment();
                 break;
             case 1:
-                fragment = new AboutFragment();
+                fragment = ContentFragment.newInstance("about");
+                break;
+            case 2:
+                fragment = ContentFragment.newInstance("services");
+                break;
+            case 3:
+                fragment = ContentFragment.newInstance("ready_solutions");
+                break;
+            case 4:
+                fragment = ContentFragment.newInstance("delivery");
                 break;
             default:
                 fragment = PlaceholderFragment.newInstance(position + 1);
@@ -63,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onSectionAttached(int number) {
+        Log.d("myLogs", "number = " + number);
         switch (number) {
             case 1:
                 mTitle = getString(R.string.menu_frontpage);

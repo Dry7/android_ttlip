@@ -1,10 +1,10 @@
 package dry7.ttlip20092015;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,34 +32,49 @@ import java.util.ArrayList;
 import dry7.ttlip20092015.Models.Category;
 import dry7.ttlip20092015.Models.Product;
 
-public class CategoryActivity extends Activity {
+public class CategoryFragment extends Fragment {
 
     public GridView gridCategories;
     public GridView gridProducts;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.category);
-        gridCategories = (GridView)findViewById(R.id.categories);
-        gridProducts = (GridView)findViewById(R.id.products);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.category, null);
+
+        gridCategories = (GridView)view.findViewById(R.id.categories);
+        gridProducts = (GridView)view.findViewById(R.id.products);
 
         gridCategories.setNumColumns(getGridSize());
         gridProducts.setNumColumns(getGridSize());
 
-        new HttpRequestTask().execute();
+        Bundle bundle = getArguments();
+
+        if (bundle != null) {
+            new HttpRequestTask().execute(bundle.getInt("category"), 0);
+        } else {
+            new HttpRequestTask().execute(0);
+        }
+
+        return view;
     }
 
     public void showCategories(ArrayList<Category> categories)
     {
-        final CategoryAdapter adapter = new CategoryAdapter(getApplicationContext(), categories);
+        final CategoryAdapter adapter = new CategoryAdapter(getActivity().getApplicationContext(), categories);
         gridCategories.setAdapter(adapter);
         gridCategories.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(CategoryActivity.this, CategoryActivity.class);
-                intent.putExtra("category", adapter.getCategory(position).getId());
-                startActivity(intent);
+                Fragment fragment = new CategoryFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt("category", Integer.valueOf(adapter.getCategory(position).getId()));
+                getActivity().setTitle(adapter.getCategory(position).getName());
+                fragment.setArguments(bundle);
+                getFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                        .addToBackStack(adapter.getCategory(position).getName())
+                            .commit();
             }
         });
 
@@ -72,14 +87,20 @@ public class CategoryActivity extends Activity {
 
     public void showProducts(ArrayList<Product> products)
     {
-        final ProductAdapter adapter = new ProductAdapter(getApplicationContext(), products);
+        final ProductAdapter adapter = new ProductAdapter(getActivity().getApplicationContext(), products);
         gridProducts.setAdapter(adapter);
         gridProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(CategoryActivity.this, ProductActivity.class);
-                intent.putExtra("product", adapter.getProduct(position).getId());
-                startActivity(intent);
+                Fragment fragment = new ProductFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt("product", Integer.valueOf(adapter.getProduct(position).getId()));
+                getActivity().setTitle(adapter.getProduct(position).getName());
+                fragment.setArguments(bundle);
+                getFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                        .addToBackStack(adapter.getProduct(position).getName())
+                        .commit();
             }
         });
 
@@ -90,33 +111,39 @@ public class CategoryActivity extends Activity {
         }
     }
 
+    /**
+     * Считаем сколько показывать элементов в строке
+     */
     public Integer getGridSize()
     {
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager)getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager)getActivity().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics.widthPixels / 300;
     }
 
-    class HttpRequestTask extends AsyncTask<Void, Void, String>
+    /**
+     * Загрузка данных из REST
+     */
+    class HttpRequestTask extends AsyncTask<Integer, Void, String>
     {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String resultJson = "";
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Integer... params) {
             try {
                 Integer category;
                 try {
-                    category = Integer.valueOf(CategoryActivity.this.getIntent().getStringExtra("category"));
+                    category = params[0];
                 } catch (Exception e) {
                     category = 0;
                     e.printStackTrace();
                 }
 
                 URL url;
-                if (Integer.valueOf(category) > 0) {
+                if (category > 0) {
                     url = new URL(String.format("http://ios.gifts48.ru/categories/%s", category));
                     Log.d("myLogs", String.format("http://ios.gifts48.ru/categories/%s", category));
                 } else {
@@ -189,7 +216,7 @@ public class CategoryActivity extends Activity {
         {
             this.context = context;
             this.categories = categories;
-            this.layoutInflater = (LayoutInflater)context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            this.layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
@@ -243,7 +270,7 @@ public class CategoryActivity extends Activity {
         {
             this.context = context;
             this.products = products;
-            this.layoutInflater = (LayoutInflater)context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            this.layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override

@@ -1,9 +1,13 @@
 package dry7.ttlip20092015;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,30 +24,32 @@ import java.net.URL;
 
 import dry7.ttlip20092015.Models.Product;
 
-public class ProductActivity extends Activity {
+public class ProductFragment extends Fragment {
 
     ImageView productImageView;
     TextView productNameView;
     TextView productPriceView;
     WebView productDescriptionView;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.product);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.product, null);
 
-        productImageView = (ImageView)findViewById(R.id.productImage);
-        productNameView = (TextView)findViewById(R.id.productName);
-        productPriceView = (TextView)findViewById(R.id.productPrice);
-        productDescriptionView = (WebView)findViewById(R.id.productDescription);
+        productImageView = (ImageView)view.findViewById(R.id.productImage);
+        productNameView = (TextView)view.findViewById(R.id.productName);
+        productPriceView = (TextView)view.findViewById(R.id.productPrice);
+        productDescriptionView = (WebView)view.findViewById(R.id.productDescription);
 
-        new HttpRequestTask().execute();
+        new HttpRequestTask().execute(getArguments().getInt("product"));
+
+        return view;
     }
 
     private void showProduct(Product product)
     {
         if (product.getImage() != null && !product.getImage().equals("")) {
-            Picasso.with(ProductActivity.this).load(product.getImage()).resize(300, 300).into(productImageView);
+            Picasso.with(ProductFragment.this.getActivity()).load(product.getImage()).resize(300, 300).into(productImageView);
         }
 
         productNameView.setText(product.getName());
@@ -51,18 +57,18 @@ public class ProductActivity extends Activity {
         productDescriptionView.loadData(product.getDescription(), "text/html; charset=UTF-8", null);
     }
 
-    class HttpRequestTask extends AsyncTask<Void, Void, String>
+    class HttpRequestTask extends AsyncTask<Integer, Void, String>
     {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String resultJson = "";
 
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(Integer... params) {
             try {
                 Integer product;
                 try {
-                    product = Integer.valueOf(ProductActivity.this.getIntent().getStringExtra("product"));
+                    product = params[0];
                 } catch (Exception e) {
                     product = 0;
                     e.printStackTrace();

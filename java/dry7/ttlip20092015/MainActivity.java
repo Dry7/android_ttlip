@@ -50,6 +50,9 @@ public class MainActivity extends AppCompatActivity
             case 0:
                 fragment = new CategoryFragment();
                 break;
+            case 1:
+                fragment = new AboutFragment();
+                break;
             default:
                 fragment = PlaceholderFragment.newInstance(position + 1);
                 break;

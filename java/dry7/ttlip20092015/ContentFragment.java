@@ -10,8 +10,6 @@ import android.webkit.WebView;
 
 public class ContentFragment extends Fragment {
 
-    private String page = "about";
-
     // TODO: Rename and change types and number of parameters
     public static ContentFragment newInstance(String page) {
         ContentFragment fragment = new ContentFragment();
@@ -60,16 +58,16 @@ public class ContentFragment extends Fragment {
         String title;
         switch (getArguments().getString("page")) {
             case "about":
-                title = "О нас";
+                title = getString(R.string.menu_about);
                 break;
             case "services":
-                title = "Услуги";
+                title = getString(R.string.menu_services);
                 break;
             case "ready_solutions":
-                title = "Готовые решения";
+                title = getString(R.string.menu_ready_solutions);
                 break;
             case "delivery":
-                title = "Доставка";
+                title = getString(R.string.menu_delivery);
                 break;
             default:
                 title = "";

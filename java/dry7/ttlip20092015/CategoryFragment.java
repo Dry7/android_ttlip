@@ -1,6 +1,5 @@
 package dry7.ttlip20092015;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -72,8 +71,6 @@ public class CategoryFragment extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putInt("category", Integer.valueOf(adapter.getCategory(position).getId()));
                 getActivity().setTitle(adapter.getCategory(position).getName());
-                Activity activity = (MainActivity)getActivity();
-                activity.setTitle("Сука((");
                 Log.d("myLogs", getActivity().toString());
                 fragment.setArguments(bundle);
                 getFragmentManager().beginTransaction()
